@@ -1,0 +1,94 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-sm-6">
+        <h4>Crear Nueva tarea</h4>
+        <ngb-alert [dismissible]="false">
+            <strong>Aclaración!</strong> En caso de agregar una sola persona no es necesario presionas "Agregar persona".
+        </ngb-alert>
+    </div>
+</div>
+<form [formGroup]="taskForm" novalidate autocomplete="off">
+    <div class="row g-3 mb-3 justify-content-center">
+        <div class="col-12 col-sm-3">
+            <label for="taskName" class="col-form-label">Nombre de la tarea</label>
+        </div>
+        <div class="col-12 col-sm-3">
+            <input type="text" id="taskName" class="form-control" formControlName="name"
+                [ngClass]="getValidationClassByControl(taskForm.controls.name)">
+            <div class="invalid-feedback">
+                Campo invalido.
+            </div>
+        </div>
+    </div>
+    <div class="row g-3 mb-3 justify-content-center">
+        <div class="col-12 col-sm-3">
+            <label for="limitTask" class="col-form-label">Fecha límite</label>
+        </div>
+        <div class="col-12 col-sm-3">
+            <div class="input-group">
+                <input
+                    id="limitTask"
+                    class="form-control"
+                    placeholder="yyyy-mm-dd"
+                    name="dp"
+                    formControlName="limitDate"
+                    ngbDatepicker
+                    #d="ngbDatepicker"
+                    [minDate]="today"
+                    [ngClass]="getValidationClassByControl(taskForm.controls.limitDate)"
+                />
+                <button class="btn btn-outline-secondary bi bi-calendar3" (click)="d.toggle()" type="button"></button>
+                <div class="invalid-feedback">
+                    Campo invalido.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <h6 class="col-12 col-sm-6">Personas Asociadas</h6>
+    </div>
+    @for (person of taskForm.controls.persons.controls; track person) {
+        <div formArrayName="persons">
+            <div formGroupName="{{$index}}">
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-3">
+                        <label for="completeNamePerson-{{$index}}" class="col-form-label">Nombre completo</label>
+                    </div>
+                    <div class="col-12 col-sm-3">
+                        <input type="text" id="completeNamePerson-{{$index}}" class="form-control" formControlName="completeName"
+                            [ngClass]="getValidationClassByControl(person.controls['completeName'])">
+                        <div class="invalid-feedback">
+                            Campo invalido.
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-3">
+                        <label for="yearPerson-{{$index}}" class="col-form-label">Edad</label>
+                    </div>
+                    <div class="col-12 col-sm-3">
+                        <input type="number" id="yearPerson-{{$index}}" class="form-control" formControlName="years"
+                        [ngClass]="getValidationClassByControl(person.controls['years'])">
+                        <div class="invalid-feedback">
+                            Campo invalido.
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center mb-3">
+                    <div class="col-12 col-sm-6 text-end">
+                        @if(taskForm.controls.persons.controls.length === 1  || (taskForm.controls.persons.controls.length > 1 && $index === 0)) {
+                            <button type="button" class="btn btn-secondary" [disabled]="person.invalid" (click)="addPerson()">Añadir persona</button>
+                        }
+                        @else {
+                            <button type="button" class="btn btn-danger" (click)="deletePerson($index)">Eliminar persona</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="row justify-content-center mb-3">
+        <div class="col-12 col-sm-6 text-end">
+            <button type="button" class="btn btn-primary" [disabled]="taskForm.invalid" (click)="saveTask()">Guardar Tarea</button>
+        </div>
+    </div>
+</form>

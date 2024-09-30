@@ -1,4 +1,11 @@
-import { createFeatureSelector } from '@ngrx/store';
-import { Task } from './task.model';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { Task, TaskStatus } from './task.model';
 
-export const selectTask = createFeatureSelector<ReadonlyArray<Task>>('tasks');
+export const selectTasks = createFeatureSelector<ReadonlyArray<Task>>('tasks');
+
+export const selectTasksByStatus = (status: TaskStatus) => createSelector(
+    selectTasks,
+    (tasks) => {
+        return tasks.filter((task) => task.status === status);
+    }
+);

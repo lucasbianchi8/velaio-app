@@ -1,0 +1,27 @@
+<div class="card">
+    <div class="card-body">
+      <div class="btn-section">
+        <span class="badge right-btn mb-2" [ngClass]="isPending ? 'text-bg-warning' : 'text-bg-success'">{{ task.status }}</span>
+        @if (isPending) {
+          <div>
+            <button type="button" class="btn btn-outline-success complete-btn right-btn mb-2" (click)="completeTask()">Completar tarea</button>
+          </div>
+        }
+        <div>
+          <button type="button" class="btn btn-outline-warning" (click)="editTask()">Editar tarea</button>
+        </div>
+      </div>
+      <h5 class="card-title">{{ task.name | titlecase  }} - {{task.limitDate.year}}-{{task.limitDate.month}}-{{task.limitDate.day}}</h5>
+      <div class="card-text">
+        <h6>Personas Asocidas:</h6>
+        <ul>
+          @for (person of task.persons; track person) {
+            <li> {{ person.completeName }} ({{ person.years }})</li>
+            <p> Habilidades: 
+             <span>{{ skillsJoined(person) }}</span>
+            </p>
+          }
+         </ul>
+      </div>
+    </div>
+  </div>

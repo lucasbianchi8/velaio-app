@@ -2,7 +2,7 @@
     <div class="col-12 col-sm-6">
         <h4>Crear Nueva tarea</h4>
         <ngb-alert [dismissible]="false">
-            <strong>Aclaración!</strong> En caso de agregar una sola persona no es necesario presionas "Agregar persona".
+            <strong>Aclaración!</strong> En caso de agregar una sola persona no es necesario presionas "Añadir persona".
         </ngb-alert>
     </div>
 </div>
@@ -15,7 +15,7 @@
             <input type="text" id="taskName" class="form-control" formControlName="name"
                 [ngClass]="getValidationClassByControl(taskForm.controls.name)">
             <div class="invalid-feedback">
-                Campo invalido.
+                Campo requerido.
             </div>
         </div>
     </div>
@@ -38,7 +38,15 @@
                 />
                 <button class="btn btn-outline-secondary bi bi-calendar3" (click)="d.toggle()" type="button"></button>
                 <div class="invalid-feedback">
-                    Campo invalido.
+                    @if(taskForm.controls.limitDate.errors?.['ngbDate']?.invalid) {
+                        Campo invalido.
+                    }
+                    @else if(taskForm.controls.limitDate.errors?.['ngbDate']?.minDate) {
+                        La fecha debe ser mayor o superior al dia actual
+                    }
+                    @else if (taskForm.controls.limitDate.errors) {
+                        Campo requerido.
+                    }
                 </div>
             </div>
         </div>
@@ -46,18 +54,26 @@
     <div class="row justify-content-center">
         <h6 class="col-12 col-sm-6">Personas Asociadas</h6>
     </div>
-    @for (person of taskForm.controls.persons.controls; track person) {
-        <div formArrayName="persons">
-            <div formGroupName="{{$index}}">
+    <div formArrayName="persons">
+        @for (person of taskForm.controls.persons.controls; track person; let in = $index) {
+            <div formGroupName="{{in}}">
                 <div class="row g-3 mb-3 justify-content-center">
                     <div class="col-12 col-sm-3">
-                        <label for="completeNamePerson-{{$index}}" class="col-form-label">Nombre completo</label>
+                        <label for="completeNamePerson-{{in}}" class="col-form-label">Nombre completo</label>
                     </div>
                     <div class="col-12 col-sm-3">
                         <input type="text" id="completeNamePerson-{{$index}}" class="form-control" formControlName="completeName"
                             [ngClass]="getValidationClassByControl(person.controls['completeName'])">
                         <div class="invalid-feedback">
-                            Campo invalido.
+                            @if(person.controls['completeName'].errors?.['required']) {
+                                Campo requerido.
+                            }
+                            @else if(person.controls['completeName'].errors?.['minlength']) {
+                                Debe tener al menos 5 caracteres.
+                            }
+                            @else if(person.controls['completeName'].errors?.['duplicated']) {
+                                El nombre ya se encuentra usado por otra persona.
+                            }
                         </div>
                     </div>
                 </div>
@@ -69,13 +85,46 @@
                         <input type="number" id="yearPerson-{{$index}}" class="form-control" formControlName="years"
                         [ngClass]="getValidationClassByControl(person.controls['years'])">
                         <div class="invalid-feedback">
-                            Campo invalido.
+                            @if(person.controls['years'].errors?.['required']) {
+                                Campo requerido.
+                            }
+                            @else if(person.controls['years'].errors?.['min']) {
+                                Debe ser mayor de 18 años.
+                            }
                         </div>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-6">
+                        <h6>Habilidades:</h6>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div formArrayName="skills" class="col-12 col-sm-3 offset-md-3">
+                        @for (skill of getSkills(person); track skill; let i = $index) {
+                            <div formGroupName="{{i}}">
+                                <input type="text" id="skill-{{in}}-{{i}}" class="form-control" formControlName="skill"
+                                    [ngClass]="getValidationClassByControl(skill)">
+                                <div class="invalid-feedback">
+                                    @if(skill.errors?.['required']) {
+                                        Campo requerido.
+                                    }
+                                </div>
+                            </div>
+                            <div class="mt-3 mb-3 text-end">
+                                @if(i === 0) {
+                                    <button type="button" class="btn btn-secondary" [disabled]="skill.invalid" (click)="addSkill(skill, in)">Añadir Habilidad</button>
+                                }
+                                @else {
+                                    <button type="button" class="btn btn-danger" (click)="deleteSkill(in, i)">Eliminar Habilidad</button>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
                 <div class="row justify-content-center mb-3">
                     <div class="col-12 col-sm-6 text-end">
-                        @if(taskForm.controls.persons.controls.length === 1  || (taskForm.controls.persons.controls.length > 1 && $index === 0)) {
+                        @if($index === 0) {
                             <button type="button" class="btn btn-secondary" [disabled]="person.invalid" (click)="addPerson()">Añadir persona</button>
                         }
                         @else {
@@ -84,8 +133,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
     <div class="row justify-content-center mb-3">
         <div class="col-12 col-sm-6 text-end">
             <button type="button" class="btn btn-primary" [disabled]="taskForm.invalid" (click)="saveTask()">Guardar Tarea</button>

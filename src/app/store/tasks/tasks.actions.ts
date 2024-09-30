@@ -5,5 +5,6 @@ export const TaskActions = createActionGroup({
   source: 'Tasks',
   events: {
     'Add': props<{ task: Task }>(),
+    'Complete': props<{id: number}>(),
   },
 });

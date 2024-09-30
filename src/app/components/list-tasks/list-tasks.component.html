@@ -1,0 +1,19 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-sm-6">
+        <div class="mb-3">
+            <app-filter-task (filter)="searchTasks($event)"/>
+        </div>
+        @if ((tasks$ | async)!.length > 0) {
+            @for (task of (tasks$ | async); track task) {
+                <div class="mb-3 mt-3">
+                    <app-task-card [task]="task" />
+                </div>
+            }
+        }
+        @else {
+            <ngb-alert [dismissible]="false" [type]="'danger'">
+                No hay items en la lista para mostrar
+            </ngb-alert>
+        }
+    </div>
+</div>

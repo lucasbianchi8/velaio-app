@@ -1,0 +1,6 @@
+<div class="btn-group" role="group" aria-label="filter group">
+    @for (filter of filters; track filter) {
+        <input type="radio" class="btn-check" autocomplete="off" [value]="filter" [checked]="$index === currrentIndex">
+        <label class="btn btn-outline-secondary" for="btnradio1" (click)="checkFilter($index)">{{filter.text}}</label>
+    }
+</div>
